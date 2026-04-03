@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RCOP Leaderboard</title>
+  <style>
+.title-wrap {
+  position: relative;
+  margin-bottom: 28px;
+}
+
+.title-wrap h1 {
+  margin-bottom: 0;
+}
+
+.designer-watermark {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.78);
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0.3px;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.25);
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (max-width: 900px) {
+  .designer-watermark {
+    position: static;
+    display: block;
+    text-align: center;
+    margin-top: 8px;
+    font-size: 11px;
+  }
+}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --main-color: #667eea;
+      --accent-color: #764ba2;
+      --heading-color: #ffffff;
+      --card-bg: #ffffff;
+      --font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background: linear-gradient(135deg, var(--main-color) 0%, var(--accent-color) 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--heading-color);
+      margin-bottom: 28px;
+      font-size: 2.5rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.25);
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+      margin-bottom: 20px;
+    }
+
+    .top-note {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .viewer-status {
+      font-size: 14px;
+      font-weight: 700;
+      color: #444;
+    }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #eef4ff;
+      color: #274690;
+      border: 1px solid #d7e4ff;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+    }
+
+    .note {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 18px;
+    }
+
+    .tier-info {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .tier-badge {
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .tier-platinum {
+      background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+      border: 3px solid #a0a0a0;
+      color: #111;
+    }
+
+    .tier-gold {
+      background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+      border: 3px solid #daa520;
+      color: #111;
+    }
+
+    .tier-diamond {
+      background: linear-gradient(135deg, #b9f2ff 0%, #8ecae6 100%);
+      border: 3px solid #219ebc;
+      color: #111;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      border-radius: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1400px;
+      background: white;
+    }
+
+    th {
+      color: white;
+      padding: 12px 8px;
+      text-align: left;
+      font-weight: 700;
+      font-size: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      vertical-align: middle;
+      background: linear-gradient(135deg, var(--main-color) 0%, var(--accent-color) 100%);
+    }
+
+    td {
+      padding: 11px 8px;
+      border-bottom: 1px solid #e8e8e8;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    tbody tr:hover {
+      background: #fafafa;
+    }
+
+    .rank {
+      font-weight: 800;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .rank-1 { color: #d4a800; }
+    .rank-2 { color: #8f8f8f; }
+    .rank-3 { color: #b76a2f; }
+
+    .student-name {
+      font-weight: 700;
+      color: #333;
+      min-width: 140px;
+      text-align: left;
+    }
+
+    .task-value {
+      display: inline-block;
+      min-width: 34px;
+      text-align: center;
+      font-weight: 700;
+      color: #2f2f2f;
+    }
+
+    .total-points {
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--main-color);
+    }
+
+    .tier-label {
+      display: inline-block;
+      padding: 6px 13px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .tier-label-bronze { background: #cd7f32; color: white; }
+    .tier-label-platinum { background: #c0c0c0; color: #333; }
+    .tier-label-gold { background: #ffd700; color: #333; }
+    .tier-label-diamond { background: #8ecae6; color: white; }
+
+    .category-header {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+      color: white;
+      border-bottom: 2px solid rgba(255,255,255,0.22);
+      letter-spacing: 0.2px;
+    }
+
+    .category-ambassador { background: #1e3a8a !important; }
+    .category-community { background: #166534 !important; }
+    .category-social { background: #be185d !important; }
+    .category-graphics { background: #9a3412 !important; }
+    .category-content { background: #5b21b6 !important; }
+
+    .task-header {
+      font-size: 10px;
+      line-height: 1.2;
+      max-width: 80px;
+      text-align: center;
+      color: white;
+      font-weight: 700;
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+
+    .task-ambassador { background: #3b5bcc !important; }
+    .task-community { background: #2f855a !important; }
+    .task-social { background: #d53f8c !important; }
+    .task-graphics { background: #c05621 !important; }
+    .task-content { background: #7f56d9 !important; }
+
+    .loading,
+    .empty-state {
+      text-align: center;
+      padding: 30px 20px;
+      color: #666;
+      font-weight: 600;
+    }
+
+    .footer-note {
+      margin-top: 14px;
+      font-size: 12px;
+      color: #666;
+      text-align: right;
+    }
+
+    @media (max-width: 900px) {
+      .tier-info {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title-wrap">
+  <h1 id="pageTitle">🏆 RCOP Ambassador Leaderboard</h1>
+  <div class="designer-watermark">designed by Pirah M.</div>
+</div>
+
+    <div class="card">
+      <div class="top-note">
+        <div class="viewer-status">Viewer Mode</div>
+        <div class="live-badge">
+          <span class="live-dot"></span>
+          Live Updates Enabled
+        </div>
+      </div>
+
+      <div class="note">
+        This page is view-only and updates automatically when admin changes the leaderboard or portal design.
+      </div>
+
+      <div class="tier-info">
+        <div class="tier-badge tier-platinum">
+          <div>🥈 Platinum Club</div>
+          <div style="font-size: 20px; margin-top: 5px;">100 Points</div>
+          <div style="font-size: 11px; margin-top: 5px;">Mentorship Group Access</div>
+        </div>
+        <div class="tier-badge tier-gold">
+          <div>🏆 Gold Tier</div>
+          <div style="font-size: 20px; margin-top: 5px;">200 Points</div>
+          <div style="font-size: 11px; margin-top: 5px;">Letter of Recommendation</div>
+        </div>
+        <div class="tier-badge tier-diamond">
+          <div>💎 Diamond Tier</div>
+          <div style="font-size: 20px; margin-top: 5px;">300 Points</div>
+          <div style="font-size: 11px; margin-top: 5px;">Observership Support</div>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table id="leaderboardTable">
+          <thead>
+            <tr>
+              <th rowspan="2" style="width: 60px;">Rank</th>
+              <th rowspan="2" style="width: 160px;">Student Name</th>
+              <th colspan="1" class="category-header category-ambassador">Ambassador</th>
+              <th colspan="5" class="category-header category-community">Community Outreach</th>
+              <th colspan="3" class="category-header category-social">Social Media</th>
+              <th colspan="3" class="category-header category-graphics">Media &amp; Graphics</th>
+              <th colspan="5" class="category-header category-content">Content Writing</th>
+              <th rowspan="2" style="width: 110px;">Total Points</th>
+              <th rowspan="2" style="width: 110px;">Tier</th>
+            </tr>
+            <tr>
+              <th class="task-header task-ambassador">Of the Month<br>(20pts)</th>
+
+              <th class="task-header task-community">Student Referral<br>(10pts)</th>
+              <th class="task-header task-community">Event/Session<br>(15pts)</th>
+              <th class="task-header task-community">Grant Proposal<br>(20pts)</th>
+              <th class="task-header task-community">Research Group<br>(25pts)</th>
+              <th class="task-header task-community">Grant Secured<br>(50pts)</th>
+
+              <th class="task-header task-social">Post<br>(7pts)</th>
+              <th class="task-header task-social">Carousel<br>(10pts)</th>
+              <th class="task-header task-social">Reel<br>(15pts)</th>
+
+              <th class="task-header task-graphics">Poster<br>(7pts)</th>
+              <th class="task-header task-graphics">Brochure<br>(15pts)</th>
+              <th class="task-header task-graphics">PPT<br>(20pts)</th>
+
+              <th class="task-header task-content">Caption<br>(7pts)</th>
+              <th class="task-header task-content">Carousel Content<br>(10pts)</th>
+              <th class="task-header task-content">Article<br>(15pts)</th>
+              <th class="task-header task-content">Newsletter<br>(15pts)</th>
+              <th class="task-header task-content">Grant Proposal<br>(20pts)</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr>
+              <td colspan="19" class="loading">Loading leaderboard...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="footer-note" id="lastUpdatedText">Waiting for data...</div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+    import { getFirestore, collection, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA6w5d40ScY0aE2zrgigyAWkxQWi_pD7bw",
+      authDomain: "rcop-leaderboard.firebaseapp.com",
+      projectId: "rcop-leaderboard",
+      storageBucket: "rcop-leaderboard.firebasestorage.app",
+      messagingSenderId: "106178499326",
+      appId: "1:106178499326:web:bf1471206122ac3b50cbaf"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const studentCollectionName = "Student";
+
+    const taskPoints = {
+      ambassador_month: 20,
+      outreach_referral: 10,
+      outreach_event: 15,
+      outreach_grant_proposal: 20,
+      outreach_research_group: 25,
+      outreach_grant_secured: 50,
+      social_post: 7,
+      social_carousel: 10,
+      social_reel: 15,
+      graphics_poster: 7,
+      graphics_brochure: 15,
+      graphics_ppt: 20,
+      content_caption: 7,
+      content_carousel: 10,
+      content_article: 15,
+      content_newsletter: 15,
+      content_grant_proposal: 20
+    };
+
+    let students = [];
+
+    function emptyTasks() {
+      const tasks = {};
+      Object.keys(taskPoints).forEach(task => tasks[task] = 0);
+      return tasks;
+    }
+
+    function normalizeStudent(raw, id) {
+      const tasks = { ...emptyTasks(), ...(raw.tasks || {}) };
+      return {
+        id,
+        name: raw.name || raw.names || "",
+        email: raw.email || "",
+        university: raw.university || "",
+        status: raw.status || "active",
+        points: Number(raw.points || raw.Points || 0),
+        rank: Number(raw.rank || 0),
+        tier: raw.tier || "Bronze",
+        tasksCompleted: Number(raw.tasksCompleted || raw.taskcompleted || 0),
+        lastUpdated: raw.lastUpdated || null,
+        tasks
+      };
+    }
+
+    function calculateTotal(student) {
+      let total = 0;
+      const tasks = student.tasks || {};
+      Object.keys(taskPoints).forEach(task => {
+        total += (Number(tasks[task]) || 0) * taskPoints[task];
+      });
+      return total;
+    }
+
+    function getTier(points) {
+      if (points >= 300) return { name: "Diamond", class: "diamond" };
+      if (points >= 200) return { name: "Gold", class: "gold" };
+      if (points >= 100) return { name: "Platinum", class: "platinum" };
+      return { name: "Bronze", class: "bronze" };
+    }
+
+    function taskValue(student, taskKey) {
+      return student.tasks?.[taskKey] || 0;
+    }
+
+    function formatTimestamp(value) {
+      try {
+        if (!value) return "Live data connected";
+        if (typeof value.toDate === "function") {
+          return "Last updated: " + value.toDate().toLocaleString();
+        }
+        return "Live data connected";
+      } catch {
+        return "Live data connected";
+      }
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById("tableBody");
+
+      if (!students.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="19" class="empty-state">No students found yet.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      const sortedStudents = students
+        .map(student => ({
+          ...student,
+          total: calculateTotal(student)
+        }))
+        .sort((a, b) => b.total - a.total)
+        .map((student, index) => ({
+          ...student,
+          displayRank: index + 1
+        }));
+
+      let html = "";
+
+      sortedStudents.forEach(student => {
+        const tier = getTier(student.total);
+        const rankClass = student.displayRank <= 3 ? `rank-${student.displayRank}` : "";
+
+        html += `
+          <tr>
+            <td class="rank ${rankClass}">#${student.displayRank}</td>
+            <td class="student-name">${student.name || ""}</td>
+
+            <td><span class="task-value">${taskValue(student, "ambassador_month")}</span></td>
+
+            <td><span class="task-value">${taskValue(student, "outreach_referral")}</span></td>
+            <td><span class="task-value">${taskValue(student, "outreach_event")}</span></td>
+            <td><span class="task-value">${taskValue(student, "outreach_grant_proposal")}</span></td>
+            <td><span class="task-value">${taskValue(student, "outreach_research_group")}</span></td>
+            <td><span class="task-value">${taskValue(student, "outreach_grant_secured")}</span></td>
+
+            <td><span class="task-value">${taskValue(student, "social_post")}</span></td>
+            <td><span class="task-value">${taskValue(student, "social_carousel")}</span></td>
+            <td><span class="task-value">${taskValue(student, "social_reel")}</span></td>
+
+            <td><span class="task-value">${taskValue(student, "graphics_poster")}</span></td>
+            <td><span class="task-value">${taskValue(student, "graphics_brochure")}</span></td>
+            <td><span class="task-value">${taskValue(student, "graphics_ppt")}</span></td>
+
+            <td><span class="task-value">${taskValue(student, "content_caption")}</span></td>
+            <td><span class="task-value">${taskValue(student, "content_carousel")}</span></td>
+            <td><span class="task-value">${taskValue(student, "content_article")}</span></td>
+            <td><span class="task-value">${taskValue(student, "content_newsletter")}</span></td>
+            <td><span class="task-value">${taskValue(student, "content_grant_proposal")}</span></td>
+
+            <td class="total-points">${student.total}</td>
+            <td><span class="tier-label tier-label-${tier.class}">${tier.name}</span></td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    function applyTheme(data = {}) {
+      const root = document.documentElement;
+
+      root.style.setProperty("--main-color", data.themeColor || "#667eea");
+      root.style.setProperty("--accent-color", data.accentColor || "#764ba2");
+      root.style.setProperty("--heading-color", data.headingColor || "#ffffff");
+      root.style.setProperty("--card-bg", data.cardBackground || "#ffffff");
+      root.style.setProperty("--font-family", data.fontFamily || "Segoe UI");
+
+      document.getElementById("pageTitle").style.color = data.headingColor || "#ffffff";
+    }
+
+    function listenToTheme() {
+      const themeRef = doc(db, "siteSettings", "theme");
+
+      onSnapshot(themeRef, (snap) => {
+        if (snap.exists()) {
+          applyTheme(snap.data());
+        } else {
+          applyTheme({});
+        }
+      }, (error) => {
+        console.error("Theme listener error:", error);
+      });
+    }
+
+    function listenToStudents() {
+      const studentsRef = collection(db, studentCollectionName);
+
+      onSnapshot(studentsRef, (snapshot) => {
+        students = snapshot.docs.map(docSnap => normalizeStudent(docSnap.data(), docSnap.id));
+        renderTable();
+
+        let latest = null;
+        students.forEach(student => {
+          if (student.lastUpdated && typeof student.lastUpdated.toDate === "function") {
+            if (!latest || student.lastUpdated.toDate() > latest.toDate()) {
+              latest = student.lastUpdated;
+            }
+          }
+        });
+
+        document.getElementById("lastUpdatedText").textContent = formatTimestamp(latest);
+      }, (error) => {
+        console.error("Student listener error:", error);
+        document.getElementById("tableBody").innerHTML = `
+          <tr>
+            <td colspan="19" class="empty-state">Could not load leaderboard data.</td>
+          </tr>
+        `;
+      });
+    }
+
+    listenToTheme();
+    listenToStudents();
+  </script>
+</body>
+</html>
